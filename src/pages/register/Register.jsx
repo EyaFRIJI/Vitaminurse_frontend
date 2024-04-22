@@ -1,15 +1,38 @@
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import SectionedMultiSelect from "react-native-sectioned-multi-select";
+import { MaterialIcons as Icon } from "@expo/vector-icons";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import actions from "../../redux/actions";
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const listMaladies = [
+    { name: "Diabète", id: 1 },
+    { name: "HT", id: 2 },
+    { name: "SUVs", id: 3 },
+    { name: "Motorbikes", id: 4 },
+    { name: "Trucks", id: 5 },
+  ];
+
+  const listAllergies = [
+    { name: "Fleur", id: 1 },
+    { name: "Vans", id: 2 },
+    { name: "SUVs", id: 3 },
+    { name: "Motorbikes", id: 4 },
+    { name: "Trucks", id: 5 },
+  ];
+
   const { control, handleSubmit, getValues } = useForm({
     defaultValues: {
       nom: "",
       prenom: "",
-      poids: 0,
-      taille: 0,
-      date_naissance: null,
+      poids: "0",
+      taille: "0",
+      date_naissance: new Date(),
       maladies: [],
       allergies: [],
       email: "",
@@ -31,7 +54,27 @@ const Register = () => {
       taille,
       tel,
     } = getValues();
-    alert(nom);
+
+    axios
+      .post("http://192.168.1.19:2000/register", {
+        nom,
+        prenom,
+        allergies,
+        date_naissance,
+        email,
+        maladies,
+        mot_passe,
+        poids,
+        taille,
+        tel,
+      })
+      .then((response) => {
+        dispatch({ type: actions.register, user: response.data });
+        console.log("register", response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
   return (
     <View>
@@ -70,17 +113,14 @@ const Register = () => {
       />
       <Controller
         control={control}
-        name="email"
+        name="date_naissance"
         render={({ field: { value, onChange }, fieldState: { error } }) => {
           return (
-            <TextInput
-              keyboardType="email-address"
+            <DateTimePicker
               value={value}
-              onChangeText={(e) => {
-                onChange(e);
+              onChange={(e) => {
+                onChange(new Date(e.nativeEvent.timestamp));
               }}
-              style={{ borderColor: "#000", borderWidth: 1 }}
-              placeholder="Email"
             />
           );
         }}
@@ -132,6 +172,60 @@ const Register = () => {
               }}
               style={{ borderColor: "#000", borderWidth: 1 }}
               placeholder="Numéro du téléphone"
+            />
+          );
+        }}
+      />
+      <Controller
+        control={control}
+        name="maladies"
+        render={({ field: { value, onChange }, fieldState: { error } }) => {
+          return (
+            <SectionedMultiSelect
+              selectText="Maladies"
+              items={listMaladies}
+              IconRenderer={Icon}
+              uniqueKey="id"
+              onSelectedItemsChange={(e) => {
+                onChange(e);
+              }}
+              selectedItems={value}
+            />
+          );
+        }}
+      />
+
+      <Controller
+        control={control}
+        name="allergies"
+        render={({ field: { value, onChange }, fieldState: { error } }) => {
+          return (
+            <SectionedMultiSelect
+              selectText="Allergies"
+              items={listAllergies}
+              IconRenderer={Icon}
+              uniqueKey="id"
+              onSelectedItemsChange={(e) => {
+                onChange(e);
+              }}
+              selectedItems={value}
+            />
+          );
+        }}
+      />
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { value, onChange }, fieldState: { error } }) => {
+          return (
+            <TextInput
+              keyboardType="email-address"
+              value={value}
+              onChangeText={(e) => {
+                onChange(e);
+              }}
+              style={{ borderColor: "#000", borderWidth: 1 }}
+              placeholder="Email"
             />
           );
         }}
