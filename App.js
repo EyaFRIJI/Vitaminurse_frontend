@@ -1,11 +1,12 @@
 import { Provider } from "react-redux";
-import store from "./src/redux/store";
 import Navigateur from "./Navigateur";
-import { View } from "react-native";
+import { StatusBar, View } from "react-native";
+import { store } from "./src/redux/store";
 
 export default function App() {
   return (
     <Provider store={store}>
+      <StatusBar />
       <Navigateur />
     </Provider>
   );

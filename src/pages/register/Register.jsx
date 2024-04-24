@@ -6,7 +6,7 @@ import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import { MaterialIcons as Icon } from "@expo/vector-icons";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import actions from "../../redux/actions";
+import { userActions } from "../../redux/userSlice";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -69,7 +69,7 @@ const Register = () => {
         tel,
       })
       .then((response) => {
-        dispatch({ type: actions.register, user: response.data });
+        dispatch(userActions.inscrire(response.data));
         console.log("register", response.data);
       })
       .catch((error) => {

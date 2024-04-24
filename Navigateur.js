@@ -1,38 +1,33 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { Fragment, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./src/pages/Home/Home";
 import Register from "./src/pages/register/Register";
-import { useDispatch, useSelector } from "react-redux";
-import actions from "./src/redux/actions";
+import { useSelector } from "react-redux";
 import Login from "./src/pages/Login/Login";
-import { getData } from "./src/utils/async";
+import Loading from "./src/pages/Loading/Loading";
 
 const Stack = createNativeStackNavigator();
 
 const Navigateur = () => {
-  const state = useSelector((state) => state._j);
-  const dispatch = useDispatch();
-
-  const loadUser = async () => {
-    const u = { name: "Khaled" };
-
-    dispatch({ type: actions.deconnecter });
-    dispatch({ type: actions.login, user: { ...u, loading: true } });
-  };
+  const { user } = useSelector((state) => state.userSlice);
 
   useEffect(() => {
-    loadUser();
-  }, []);
-
-  useEffect(() => {
-    console.log(state.user);
-  }, [state]);
+    console.log("user   ", user);
+  }, [user]);
 
   return (
     <NavigationContainer>
-      {state ? (
+      {user === undefined ? (
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Loading"
+            component={Loading}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      ) : user ? (
         <Stack.Navigator>
           <Stack.Screen
             name="Home"
@@ -45,12 +40,12 @@ const Navigateur = () => {
           <Stack.Screen
             name="Login"
             component={Login}
-            options={{ title: "Login" }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Register"
             component={Register}
-            options={{ title: "Register" }}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       )}
