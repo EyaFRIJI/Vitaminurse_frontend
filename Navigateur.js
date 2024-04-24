@@ -14,7 +14,7 @@ const Navigateur = () => {
   const { user } = useSelector((state) => state.userSlice);
 
   useEffect(() => {
-    console.log("user   ", user);
+    console.log({ user });
   }, [user]);
 
   return (
@@ -27,7 +27,7 @@ const Navigateur = () => {
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
-      ) : user ? (
+      ) : user !== null ? (
         <Stack.Navigator>
           <Stack.Screen
             name="Home"
@@ -36,18 +36,20 @@ const Navigateur = () => {
           />
         </Stack.Navigator>
       ) : (
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={Register}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
+        user === null && (
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={Register}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        )
       )}
     </NavigationContainer>
   );

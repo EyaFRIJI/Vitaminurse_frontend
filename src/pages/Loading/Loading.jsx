@@ -11,9 +11,9 @@ const Loading = () => {
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem("user");
-      console.log(value);
+
       if (value) {
-        dispatch(userActions.connecter(value));
+        dispatch(userActions.connecter(JSON.parse(value)));
         setStoredData(value);
       } else {
         dispatch(userActions.deconnecter());
