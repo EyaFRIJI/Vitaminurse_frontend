@@ -7,8 +7,10 @@ import { MaterialIcons as Icon } from "@expo/vector-icons";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { userActions } from "../../redux/userSlice";
+import Constants from "expo-constants";
+import { storeData } from "../../utils/async";
 
-const Register = () => {
+const Register = ({ navigation }) => {
   const dispatch = useDispatch();
   const listMaladies = [
     { name: "Diabète", id: 1 },
@@ -56,7 +58,7 @@ const Register = () => {
     } = getValues();
 
     axios
-      .post("http://192.168.1.19:2000/register", {
+      .post(Constants.expoConfig.extra.url + "/register", {
         nom,
         prenom,
         allergies,
@@ -69,8 +71,8 @@ const Register = () => {
         tel,
       })
       .then((response) => {
+        storeData("user", response.data);
         dispatch(userActions.inscrire(response.data));
-        console.log("register", response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -251,6 +253,12 @@ const Register = () => {
         title="Submit"
         onPress={() => {
           SubmitRegister();
+        }}
+      />
+      <Button
+        title="J'ai un compte ! connecter"
+        onPress={() => {
+          navigation.navigate("Login");
         }}
       />
     </View>

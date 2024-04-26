@@ -7,6 +7,7 @@ import Register from "./src/pages/register/Register";
 import { useSelector } from "react-redux";
 import Login from "./src/pages/Login/Login";
 import Loading from "./src/pages/Loading/Loading";
+import ListProducts from "./src/pages/ListProducts/ListProducts";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,11 @@ const Navigateur = () => {
             name="Home"
             component={Home}
             options={{ title: "Welcome" }}
+          />
+          <Stack.Screen
+            name="ListProducts"
+            component={ListProducts}
+            options={{ title: "List Products" }}
           />
         </Stack.Navigator>
       ) : (
