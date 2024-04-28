@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import Login from "./src/pages/Login/Login";
 import Loading from "./src/pages/Loading/Loading";
 import ListProducts from "./src/pages/ListProducts/ListProducts";
+import CameraScreen from "./src/pages/CameraScreen/CameraScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,11 @@ const Navigateur = () => {
             name="ListProducts"
             component={ListProducts}
             options={{ title: "List Products" }}
+          />
+          <Stack.Screen
+            name="CameraScreen"
+            component={CameraScreen}
+            options={{ title: "Camera" }}
           />
         </Stack.Navigator>
       ) : (

@@ -18,9 +18,15 @@ export default function Home({ navigation }) {
       />
 
       <Button
-        title="Liste des produits"
+        title="Rechercher des produits"
         onPress={() => {
           navigation.navigate("ListProducts");
+        }}
+      />
+      <Button
+        title="Ouvrir Camera"
+        onPress={() => {
+          navigation.navigate("CameraScreen");
         }}
       />
     </View>
