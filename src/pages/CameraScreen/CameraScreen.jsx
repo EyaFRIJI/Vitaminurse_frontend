@@ -8,12 +8,12 @@ import pickImage from "../../utils/uploadImage";
 export default function CameraScreen() {
   const [displayText, setDisplayText] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
+  const [code, setCode] = useState(null);
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
-      alert("permission granted");
     })();
   }, []);
 
@@ -22,7 +22,7 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       <Camera
-        style={{ flex: 1 }}
+        style={{ flex: code === null ? 1 : 0 }}
         barCodeScannerSettings={{
           barCodeTypes: [
             BarCodeScanner.Constants.BarCodeType.codabar,
@@ -37,9 +37,11 @@ export default function CameraScreen() {
           ],
         }}
         onBarCodeScanned={(...args) => {
-          const data = args[0].data;
-          let result = JSON.stringify(data);
-          setDisplayText(result);
+          if (code === null) {
+            const data = args[0].data;
+
+            setCode(data);
+          }
         }}
       />
       <View style={styles.boxContainer}>
@@ -55,7 +57,11 @@ export default function CameraScreen() {
             {displayText}
           </Text>
           <Button
-            onPress={() => console.log(pickImage())}
+            onPress={async () => {
+              const s = await pickImage();
+
+              setCode(s);
+            }}
             title="Pick from gallery"
           />
         </View>

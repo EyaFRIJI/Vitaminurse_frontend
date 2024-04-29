@@ -19,7 +19,6 @@ const Loading = () => {
       }
     } catch (e) {
       // error reading value
-      console.log(e);
     }
   };
 

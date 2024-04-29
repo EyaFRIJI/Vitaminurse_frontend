@@ -74,9 +74,7 @@ const Register = ({ navigation }) => {
         storeData("user", response.data);
         dispatch(userActions.inscrire(response.data));
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => {});
   }
   return (
     <View>

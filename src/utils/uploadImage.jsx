@@ -1,7 +1,20 @@
 import * as ImagePicker from "expo-image-picker";
 import { BarCodeScanner } from "expo-barcode-scanner";
+import { db, storage } from "../../firebaseConfig";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 } from "uuid";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
+import dayjs from "dayjs";
+import { uiActions } from "../redux/uiSlice";
 
-const pickImage = async () => {
+const pickImage = async (dispatch) => {
   // No permissions request is necessary for launching the image library
 
   // pick an image from gallery
@@ -13,19 +26,30 @@ const pickImage = async () => {
   });
 
   // if the user successfully picks an image then we check if the image has a QR code
-  if (result && result.assets[0].uri) {
+
+  if (!result.canceled && result.assets[0].uri) {
     try {
       const scannedResults = await BarCodeScanner.scanFromURLAsync(
         result.assets[0].uri
       );
-
-      const dataNeeded = scannedResults[0].data;
-      // setDisplayText(dataNeeded);
-      return { error: null, code: dataNeeded };
+      if (scannedResults.length > 0) {
+        const dataNeeded = scannedResults[0].data;
+        dispatch(uiActions.setSuccessMessage("Uploaded successfully"));
+        return { error: null, code: dataNeeded, uri: result.assets[0].uri };
+      } else {
+        dispatch(
+          uiActions.setErrorMessage(
+            "Image invalide. aucun code à barre détecté"
+          )
+        );
+        return {
+          error: "Image invalide. aucun code à barre détecté",
+          code: null,
+        };
+      }
     } catch (error) {
-      // if there this no QR code
-      // setDisplayText("No QR Code Found");
-      return { error: "No QR Code Found", code: null };
+      dispatch(uiActions.setErrorMessage(error.message));
+      return { error: error.message, code: null };
     }
   }
 };
