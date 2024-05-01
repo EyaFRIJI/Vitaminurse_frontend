@@ -70,7 +70,6 @@ export default function Home({ navigation }) {
           dispatch(userActions.deconnecter());
         }}
       />
-
       <Button
         title="Rechercher des produits"
         onPress={() => {
@@ -88,6 +87,12 @@ export default function Home({ navigation }) {
         onPress={async () => {
           const s = await pickImage(dispatch);
           setCode(s);
+        }}
+      />
+      <Button
+        title="Importer Image"
+        onPress={async () => {
+          navigation.navigate("Cam");
         }}
       />
     </View>

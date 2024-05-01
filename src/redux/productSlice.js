@@ -4,6 +4,7 @@ const initialState = {
   listProducts: [],
   searchedProduct: [],
   search: false,
+  images: [],
 };
 
 export const productSlice = createSlice({
@@ -17,6 +18,14 @@ export const productSlice = createSlice({
     searchProduct: (state, action) => {
       state.search = true;
       state.searchedProduct = action.payload;
+    },
+    addImage: (state, { payload }) => {
+      state.images.push(payload);
+    },
+    deleteImage: (state, { payload }) => {
+      state.images = state.images.filter((image) => {
+        return image !== payload;
+      });
     },
   },
 });

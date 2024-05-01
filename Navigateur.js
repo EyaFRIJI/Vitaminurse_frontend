@@ -11,6 +11,8 @@ import ListProducts from "./src/pages/ListProducts/ListProducts";
 import CameraScreen from "./src/pages/CameraScreen/CameraScreen";
 import Toast from "react-native-root-toast";
 import { uiActions } from "./src/redux/uiSlice";
+import Cam from "./src/pages/Cam/Cam";
+import Preview from "./src/pages/Preview/Preview";
 const Stack = createNativeStackNavigator();
 
 const Navigateur = () => {
@@ -65,6 +67,7 @@ const Navigateur = () => {
             component={Home}
             options={{ title: "Welcome" }}
           />
+          <Stack.Screen name="Cam" component={Cam} options={{ title: "Cam" }} />
           <Stack.Screen
             name="ListProducts"
             component={ListProducts}
@@ -73,6 +76,11 @@ const Navigateur = () => {
           <Stack.Screen
             name="CameraScreen"
             component={CameraScreen}
+            options={{ title: "Camera" }}
+          />
+          <Stack.Screen
+            name="Preview"
+            component={Preview}
             options={{ title: "Camera" }}
           />
         </Stack.Navigator>
