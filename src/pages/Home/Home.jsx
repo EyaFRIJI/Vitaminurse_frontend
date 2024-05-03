@@ -62,14 +62,6 @@ export default function Home({ navigation }) {
 
   return (
     <View>
-      <Text>Home</Text>
-      <Button
-        title="Déconnecter"
-        onPress={() => {
-          storeData("user", null);
-          dispatch(userActions.deconnecter());
-        }}
-      />
       <Button
         title="Rechercher des produits"
         onPress={() => {

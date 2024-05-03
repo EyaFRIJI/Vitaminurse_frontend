@@ -13,6 +13,9 @@ import Toast from "react-native-root-toast";
 import { uiActions } from "./src/redux/uiSlice";
 import Cam from "./src/pages/Cam/Cam";
 import Preview from "./src/pages/Preview/Preview";
+import BottomBar from "./src/components/BottomBar/BottomBar";
+import { navigationRef } from "./RootNavigation";
+
 const Stack = createNativeStackNavigator();
 
 const Navigateur = () => {
@@ -28,7 +31,7 @@ const Navigateur = () => {
   }, [successMessage, errorMessage]);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       {errorMessage && (
         <Toast
           backgroundColor="red"
@@ -100,6 +103,8 @@ const Navigateur = () => {
           </Stack.Navigator>
         )
       )}
+
+      {user !== null && <BottomBar />}
     </NavigationContainer>
   );
 };
