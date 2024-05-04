@@ -2,13 +2,15 @@ import { useIsFocused } from "@react-navigation/native";
 import { Camera, CameraType } from "expo-camera";
 import { useEffect, useRef, useState } from "react";
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch } from "react-redux";
+import { productActions } from "../../redux/productSlice";
 
 export default function Cam({ navigation }) {
   const [type, setType] = useState(CameraType.back);
   const isFocused = useIsFocused();
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const cameraRef = useRef(null);
-
+  const dispatch = useDispatch();
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
@@ -35,7 +37,8 @@ export default function Cam({ navigation }) {
   const takePicture = async () => {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
-      navigation.navigate("Preview", { photo: photo.uri });
+      dispatch(productActions.addImage(photo.uri));
+      navigation.navigate("Preview");
     }
   };
 

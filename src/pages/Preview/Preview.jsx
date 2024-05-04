@@ -1,5 +1,5 @@
 // Importations nécessaires
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Image,
@@ -11,18 +11,72 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "../../redux/productSlice";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { db, storage } from "../../../firebaseConfig";
+import dayjs from "dayjs";
+import { uiActions } from "../../redux/uiSlice";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 
 const Preview = ({ route, navigation }) => {
   const { images } = useSelector((state) => state.productSlice);
   const dispatch = useDispatch();
-  const { photo } = route.params;
+  const [imagesPath, setImagesPath] = useState([]);
+
+  const uploadToFireStorage = async () => {
+    try {
+      Promise.all(
+        images.map(async (image) => {
+          const fetchResponse = await fetch(image);
+          const theBlob = await fetchResponse.blob();
+          const storageRef = ref(
+            storage,
+            dayjs().toISOString() +
+              "." +
+              image.split(".")[image.split(".").length - 1]
+          );
+          const t = await uploadBytes(storageRef, theBlob).then(
+            async (snapshot) => {
+              return await getDownloadURL(snapshot.ref).then(
+                async (downloadURL) => {
+                  setImagesPath([...imagesPath, downloadURL]);
+                  return downloadURL;
+                }
+              );
+            }
+          );
+          return t;
+        })
+      ).then((data) => {
+        const produitAAnalyser = {
+          images: data,
+        };
+        setDoc(
+          doc(db, "produit_à_analyser", dayjs().toISOString()),
+          produitAAnalyser
+        ).then((docRef) => {
+          console.log(docRef);
+        });
+      });
+    } catch (error) {
+      dispatch(uiActions.setErrorMessage(error.message));
+    }
+  };
+
+  useEffect(() => {}, [imagesPath]);
 
   return (
     <View style={styles.container}>
-      <Text>{images.length}</Text>
       <ScrollView>
-        {images.map((i) => (
+        {images.map((i, index) => (
           <TouchableOpacity
+            key={index}
             onLongPress={() => {
               dispatch(productActions.deleteImage(i));
             }}
@@ -31,16 +85,17 @@ const Preview = ({ route, navigation }) => {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
       <Button
-        title="OK"
+        title="Ajouter une autre image"
         onPress={() => {
-          dispatch(productActions.addImage(photo));
+          navigation.navigate("Cam");
         }}
       />
       <Button
-        title="Annuler"
+        title="Enregistrer"
         onPress={() => {
-          navigation.navigate("Cam");
+          uploadToFireStorage();
         }}
       />
     </View>

@@ -23,42 +23,25 @@ export default function Home({ navigation }) {
   const [code, setCode] = useState(null);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    code !== null && code.error == null && uploadToFireStorage();
-    setCode(null);
-  }, [code]);
-
-  const uploadToFireStorage = async () => {
-    try {
-      const fetchResponse = await fetch(code.uri);
-      const theBlob = await fetchResponse.blob();
-      const storageRef = ref(
-        storage,
-        dayjs().toISOString() +
-          "." +
-          code.uri.split(".")[code.uri.split(".").length - 1]
-      );
-      await uploadBytes(storageRef, theBlob).then(async (snapshot) => {
-        await getDownloadURL(snapshot.ref).then(async (downloadURL) => {
-          imageURL = downloadURL;
-          const product = {
-            name: "name",
-            price: 155,
-            image: imageURL,
-            category: "categorcategoryy",
-            deletedAt: "",
-            ocr: { calcuim: 18, proteine: 1220 },
-          };
-          const collectionRef = collection(db, "product");
-          setDoc(doc(db, "product", code.code), product).then((docRef) => {
-            console.log(docRef);
-          });
-        });
+  const searchDoc = async () => {
+    const docRef = doc(db, "Produits", code.code);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      docSnap.data().ocr.map((donnee) => {
+        console.log(donnee);
       });
-    } catch (error) {
-      dispatch(uiActions.setErrorMessage(error.message));
+    } else {
+      dispatch(uiActions.clearAll());
+      dispatch(uiActions.setErrorMessage("Produit inexistant"));
+      navigation.navigate("Cam");
     }
   };
+
+  useEffect(() => {
+    code !== null && code !== undefined && code.error == null && searchDoc();
+    // uploadToFireStorage();
+    setCode(null);
+  }, [code]);
 
   return (
     <View>

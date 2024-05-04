@@ -44,8 +44,8 @@ const BottomBar = ({}) => {
 
       <TouchableOpacity
         onPress={() => {
-          RootNavigation.navigate("Cam");
-          setRouteName("Cam");
+          RootNavigation.navigate("CameraScreen");
+          setRouteName("CameraScreen");
         }}
       >
         <Ionicons
