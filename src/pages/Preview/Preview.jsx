@@ -5,7 +5,6 @@ import {
   Image,
   Button,
   StyleSheet,
-  Text,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
@@ -15,22 +14,20 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "../../../firebaseConfig";
 import dayjs from "dayjs";
 import { uiActions } from "../../redux/uiSlice";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-} from "firebase/firestore";
+import Constants from "expo-constants";
 
-const Preview = ({ route, navigation }) => {
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import axios from "axios";
+
+const Preview = ({ navigation }) => {
   const { images } = useSelector((state) => state.productSlice);
+  const { user } = useSelector((state) => state.userSlice);
   const dispatch = useDispatch();
   const [imagesPath, setImagesPath] = useState([]);
 
   const uploadToFireStorage = async () => {
     try {
+      dispatch(uiActions.setLoading(true));
       Promise.all(
         images.map(async (image) => {
           const fetchResponse = await fetch(image);
@@ -53,16 +50,42 @@ const Preview = ({ route, navigation }) => {
           );
           return t;
         })
-      ).then((data) => {
+      ).then(async (data) => {
         const produitAAnalyser = {
           images: data,
+          user: user._id,
         };
-        setDoc(
-          doc(db, "produit_à_analyser", dayjs().toISOString()),
+        const id = dayjs().toISOString();
+        const a = await setDoc(
+          doc(db, "produit_à_analyser", id),
           produitAAnalyser
-        ).then((docRef) => {
-          console.log(docRef);
-        });
+        )
+          .then(async () => {
+            const docRef = doc(db, "produit_à_analyser", id);
+            const docSnap = await getDoc(docRef);
+            axios
+              .post(Constants.expoConfig.extra.url + "/analyse_ocr", {
+                produit: docSnap.data(),
+              })
+              .then(async (response) => {
+                await setDoc(doc(db, "produit_à_analyser", id), {
+                  ...produitAAnalyser,
+                  resultat: response.data,
+                }).then((res) => {
+                  dispatch(uiActions.setLoading(false));
+                  console.log(response.data);
+                  alert("Demande enregistrée, veillez valider l'OCR svp.");
+                });
+              })
+              .catch((err) => {
+                dispatch(uiActions.setLoading(false));
+                console.log(err);
+              });
+          })
+          .catch((err) => {
+            dispatch(uiActions.setLoading(false));
+            console.log(err);
+          });
       });
     } catch (error) {
       dispatch(uiActions.setErrorMessage(error.message));
