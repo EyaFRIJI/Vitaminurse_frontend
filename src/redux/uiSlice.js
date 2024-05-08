@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   successMessage: "",
   errorMessage: "",
+  loading: false,
 };
 
 export const uiSlice = createSlice({
@@ -18,6 +19,9 @@ export const uiSlice = createSlice({
     clearAll: (state) => {
       state.successMessage = "";
       state.errorMessage = "";
+    },
+    setLoading: (state, { payload }) => {
+      state.loading = payload;
     },
   },
 });

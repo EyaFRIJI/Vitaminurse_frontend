@@ -1,4 +1,12 @@
-import { StyleSheet, ToastAndroid, View } from "react-native";
+import {
+  ActivityIndicator,
+  Button,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  ToastAndroid,
+  View,
+} from "react-native";
 import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -21,6 +29,7 @@ const Stack = createNativeStackNavigator();
 const Navigateur = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.userSlice);
+  const { loading } = useSelector((state) => state.uiSlice);
   const { successMessage, errorMessage } = useSelector(
     (state) => state.uiSlice
   );
@@ -32,6 +41,26 @@ const Navigateur = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
+      <Modal
+        onTouchCancel={() => {
+          dispatch(uiActions.setLoading(false));
+        }}
+        animationType={"slide"}
+        transparent={true}
+        visible={loading}
+        onRequestClose={() => {
+          dispatch(uiActions.setLoading(false));
+        }}
+      >
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <View style={styles.childStyle}>
+            <ActivityIndicator color={"#f0f"} size={50} />
+          </View>
+        </View>
+      </Modal>
+
       {errorMessage && (
         <Toast
           backgroundColor="red"
