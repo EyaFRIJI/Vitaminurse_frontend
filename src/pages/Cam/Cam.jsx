@@ -48,7 +48,7 @@ export default function Cam({ navigation }) {
         <Camera style={styles.camera} type={type} ref={cameraRef}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={takePicture}>
-              <Text style={styles.text}>Flip Camera</Text>
+              <Text style={styles.text}>OK</Text>
             </TouchableOpacity>
           </View>
         </Camera>

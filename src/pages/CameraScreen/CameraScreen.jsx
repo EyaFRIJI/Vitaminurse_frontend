@@ -32,7 +32,6 @@ export default function CameraScreen() {
             BarCodeScanner.Constants.BarCodeType.maxicode,
             BarCodeScanner.Constants.BarCodeType.datamatrix,
             BarCodeScanner.Constants.BarCodeType.aztec,
-
             BarCodeScanner.Constants.BarCodeType.qr,
           ],
         }}
@@ -62,7 +61,7 @@ export default function CameraScreen() {
 
               setCode(s);
             }}
-            title="Pick from gallery"
+            title="Importer depuis gallerie"
           />
         </View>
       </View>
