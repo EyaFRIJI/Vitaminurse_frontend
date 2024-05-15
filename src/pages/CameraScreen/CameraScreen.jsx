@@ -3,7 +3,7 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { Camera } from "expo-camera";
+import { Camera } from "expo-camera/legacy";
 import pickImage from "../../utils/uploadImage";
 export default function CameraScreen() {
   const [displayText, setDisplayText] = useState("");
@@ -38,7 +38,6 @@ export default function CameraScreen() {
         onBarCodeScanned={(...args) => {
           if (code === null) {
             const data = args[0].data;
-
             setCode(data);
           }
         }}

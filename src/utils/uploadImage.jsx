@@ -32,6 +32,7 @@ const pickImage = async (dispatch) => {
       const scannedResults = await BarCodeScanner.scanFromURLAsync(
         result.assets[0].uri
       );
+
       if (scannedResults.length > 0) {
         const dataNeeded = scannedResults[0].data;
         dispatch(uiActions.setSuccessMessage("Uploaded successfully"));

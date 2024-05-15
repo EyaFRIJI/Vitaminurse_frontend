@@ -19,8 +19,11 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
+import { productActions } from "../../redux/productSlice";
+import ConfirmOCR from "../../components/ConfirmOCR/ConfirmOCR";
 export default function Home({ navigation }) {
   const [code, setCode] = useState(null);
+  const [newP, setNewP] = useState(false);
   const dispatch = useDispatch();
 
   const searchDoc = async () => {
@@ -31,17 +34,24 @@ export default function Home({ navigation }) {
         console.log(donnee);
       });
     } else {
+      dispatch(productActions.setScannedId(code.code));
       dispatch(uiActions.clearAll());
       dispatch(uiActions.setErrorMessage("Produit inexistant"));
-      navigation.navigate("Cam");
+      setNewP(true);
     }
   };
 
   useEffect(() => {
     code !== null && code !== undefined && code.error == null && searchDoc();
-    // uploadToFireStorage();
+    //uploadToFireStorage();
     setCode(null);
   }, [code]);
+
+  useEffect(() => {
+    if (newP) {
+      navigation.navigate("Cam");
+    }
+  }, [newP]);
 
   return (
     <View>
@@ -64,12 +74,12 @@ export default function Home({ navigation }) {
           setCode(s);
         }}
       />
-      <Button
+      {/* <Button
         title="Importer Image"
         onPress={async () => {
           navigation.navigate("Cam");
         }}
-      />
+      /> */}
     </View>
   );
 }

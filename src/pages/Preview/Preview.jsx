@@ -18,9 +18,10 @@ import Constants from "expo-constants";
 
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import axios from "axios";
+import ConfirmOCR from "../../components/ConfirmOCR/ConfirmOCR";
 
 const Preview = ({ navigation }) => {
-  const { images } = useSelector((state) => state.productSlice);
+  const { images, scannedID } = useSelector((state) => state.productSlice);
   const { user } = useSelector((state) => state.userSlice);
   const dispatch = useDispatch();
   const [imagesPath, setImagesPath] = useState([]);
@@ -34,7 +35,9 @@ const Preview = ({ navigation }) => {
           const theBlob = await fetchResponse.blob();
           const storageRef = ref(
             storage,
-            dayjs().toISOString() +
+            scannedID +
+              "_" +
+              dayjs().unix() +
               "." +
               image.split(".")[image.split(".").length - 1]
           );
@@ -51,25 +54,22 @@ const Preview = ({ navigation }) => {
           return t;
         })
       ).then(async (data) => {
-        const produitAAnalyser = {
+        const analyse_ocr = {
           images: data,
           user: user._id,
         };
-        const id = dayjs().toISOString();
-        const a = await setDoc(
-          doc(db, "produit_à_analyser", id),
-          produitAAnalyser
-        )
+        const id = scannedID + "_" + dayjs().unix();
+        setDoc(doc(db, "analyse_ocr", id), analyse_ocr)
           .then(async () => {
-            const docRef = doc(db, "produit_à_analyser", id);
+            const docRef = doc(db, "analyse_ocr", id);
             const docSnap = await getDoc(docRef);
             axios
               .post(Constants.expoConfig.extra.url + "/analyse_ocr", {
                 produit: docSnap.data(),
               })
               .then(async (response) => {
-                await setDoc(doc(db, "produit_à_analyser", id), {
-                  ...produitAAnalyser,
+                await setDoc(doc(db, "analyse_ocr", id), {
+                  ...analyse_ocr,
                   resultat: response.data,
                 }).then((res) => {
                   dispatch(uiActions.setLoading(false));

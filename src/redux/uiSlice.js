@@ -4,6 +4,7 @@ const initialState = {
   successMessage: "",
   errorMessage: "",
   loading: false,
+  showConfirmOCRModal: true,
 };
 
 export const uiSlice = createSlice({
@@ -22,6 +23,9 @@ export const uiSlice = createSlice({
     },
     setLoading: (state, { payload }) => {
       state.loading = payload;
+    },
+    setShowConfirmOCRModal: (state, { payload }) => {
+      state.showConfirmOCRModal = payload;
     },
   },
 });

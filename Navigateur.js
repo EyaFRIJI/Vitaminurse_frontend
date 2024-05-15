@@ -99,7 +99,7 @@ const Navigateur = () => {
             component={Home}
             options={{ title: "Welcome" }}
           />
-          <Stack.Screen name="Cam" component={Cam} options={{ title: "Cam" }} />
+
           <Stack.Screen
             name="ListProducts"
             component={ListProducts}
@@ -115,6 +115,7 @@ const Navigateur = () => {
             component={Preview}
             options={{ title: "Camera" }}
           />
+          <Stack.Screen name="Cam" component={Cam} options={{ title: "Cam" }} />
         </Stack.Navigator>
       ) : (
         user === null && (

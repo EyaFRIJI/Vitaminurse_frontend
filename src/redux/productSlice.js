@@ -5,6 +5,7 @@ const initialState = {
   searchedProduct: [],
   search: false,
   images: [],
+  scannedID: null,
 };
 
 export const productSlice = createSlice({
@@ -26,6 +27,9 @@ export const productSlice = createSlice({
       state.images = state.images.filter((image) => {
         return image !== payload;
       });
+    },
+    setScannedId: (state, { payload }) => {
+      state.scannedID = payload;
     },
   },
 });
