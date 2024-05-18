@@ -50,6 +50,7 @@ export default function Home({ navigation }) {
   useEffect(() => {
     if (newP) {
       navigation.navigate("Cam");
+      setNewP(false);
     }
   }, [newP]);
 

@@ -25,6 +25,7 @@ const Preview = ({ navigation }) => {
   const { user } = useSelector((state) => state.userSlice);
   const dispatch = useDispatch();
   const [imagesPath, setImagesPath] = useState([]);
+  const [analyse, setAnalyse] = useState(null);
 
   const uploadToFireStorage = async () => {
     try {
@@ -73,7 +74,12 @@ const Preview = ({ navigation }) => {
                   resultat: response.data,
                 }).then((res) => {
                   dispatch(uiActions.setLoading(false));
-                  console.log(response.data);
+                  dispatch(uiActions.setShowConfirmOCRModal(true));
+                  setAnalyse({
+                    ...analyse_ocr,
+                    id,
+                    resultat: response.data,
+                  });
                   alert("Demande enregistrée, veillez valider l'OCR svp.");
                 });
               })
@@ -96,6 +102,7 @@ const Preview = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <ConfirmOCR analyse={analyse} navigation={navigation} />
       <ScrollView>
         {images.map((i, index) => (
           <TouchableOpacity

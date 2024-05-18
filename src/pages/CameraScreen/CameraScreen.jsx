@@ -1,14 +1,23 @@
 import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Camera } from "expo-camera/legacy";
 import pickImage from "../../utils/uploadImage";
-export default function CameraScreen() {
+import { doc, getDoc } from "firebase/firestore";
+import { db, storage } from "../../../firebaseConfig";
+import { useDispatch } from "react-redux";
+import { productActions } from "../../redux/productSlice";
+import { uiActions } from "../../redux/uiSlice";
+
+export default function CameraScreen({ navigation }) {
   const [displayText, setDisplayText] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
   const [code, setCode] = useState(null);
+  const [newP, setNewP] = useState(false);
+  const dispatch = useDispatch();
+  const cameraRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -19,10 +28,42 @@ export default function CameraScreen() {
 
   //use..... ==> hook
 
+  const searchDoc = async () => {
+    const docRef = doc(db, "Produits", code.code);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      docSnap.data().ocr.map((donnee) => {
+        console.log(donnee);
+      });
+    } else {
+      dispatch(productActions.setScannedId(code.code));
+      dispatch(uiActions.clearAll());
+      dispatch(uiActions.setErrorMessage("Produit inexistant"));
+      setNewP(true);
+    }
+  };
+
+  useEffect(() => {
+    code !== null &&
+      code !== undefined &&
+      code.error == null &&
+      setTimeout(() => {
+        searchDoc();
+      }, 300);
+  }, [code]);
+
+  useEffect(() => {
+    if (newP) {
+      navigation.navigate("Cam");
+      setNewP(false);
+    }
+  }, [newP]);
+
   return (
     <View style={styles.container}>
       <Camera
-        style={{ flex: code === null ? 1 : 0 }}
+        ref={cameraRef}
+        style={{ flex: 1 }}
         barCodeScannerSettings={{
           barCodeTypes: [
             BarCodeScanner.Constants.BarCodeType.codabar,
@@ -36,28 +77,15 @@ export default function CameraScreen() {
           ],
         }}
         onBarCodeScanned={(...args) => {
-          if (code === null) {
-            const data = args[0].data;
-            setCode(data);
-          }
+          const data = args[0].data;
+          setCode({ code: data, error: null });
         }}
       />
       <View style={styles.boxContainer}>
         <View style={{ marginBottom: 50 }}>
-          <Text
-            style={{
-              height: 40,
-              width: 300,
-              backgroundColor: "white",
-              marginBottom: 20,
-            }}
-          >
-            {displayText}
-          </Text>
           <Button
             onPress={async () => {
-              const s = await pickImage();
-
+              const s = await pickImage(dispatch);
               setCode(s);
             }}
             title="Importer depuis gallerie"
@@ -66,7 +94,14 @@ export default function CameraScreen() {
       </View>
 
       <View style={styles.scanBoxContainer}>
-        <View style={styles.scanBox}></View>
+        <View
+          style={{
+            width: 300,
+            height: 300,
+            borderWidth: code ? 5 : 1,
+            borderColor: code ? "green" : "white",
+          }}
+        ></View>
       </View>
     </View>
   );
@@ -93,11 +128,5 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     zIndex: 0,
-  },
-  scanBox: {
-    width: 300,
-    height: 300,
-    borderWidth: 1,
-    borderColor: "white",
   },
 });

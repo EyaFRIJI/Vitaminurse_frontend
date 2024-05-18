@@ -4,7 +4,7 @@ const initialState = {
   successMessage: "",
   errorMessage: "",
   loading: false,
-  showConfirmOCRModal: true,
+  showConfirmOCRModal: false,
 };
 
 export const uiSlice = createSlice({

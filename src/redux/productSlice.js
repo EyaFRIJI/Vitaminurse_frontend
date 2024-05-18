@@ -6,6 +6,7 @@ const initialState = {
   search: false,
   images: [],
   scannedID: null,
+  analyse_ocr: null,
 };
 
 export const productSlice = createSlice({
@@ -28,8 +29,14 @@ export const productSlice = createSlice({
         return image !== payload;
       });
     },
+    clearImages: (state) => {
+      state.images = [];
+    },
     setScannedId: (state, { payload }) => {
       state.scannedID = payload;
+    },
+    setAnalyseOCR: (state, { payload }) => {
+      state.analyse_ocr = payload;
     },
   },
 });
