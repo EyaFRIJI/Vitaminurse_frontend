@@ -69,6 +69,19 @@ const BottomBar = ({}) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        onPress={() => {
+          setRouteName("Profile");
+          RootNavigation.navigate("Profile");
+        }}
+      >
+        <Ionicons
+          name="search"
+          size={routeName === "Profile" ? 35 : 25}
+          color={routeName === "Profile" ? "#5ba5ff" : "grey"}
+        />
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={{ position: "absolute", right: 0 }}
         onPress={() => {
           storeData("user", null);

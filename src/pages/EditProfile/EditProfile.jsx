@@ -1,36 +1,38 @@
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useState } from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import TextInputField from "../../components/TextInputField/TextInputField";
 import { Controller, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
+import { listAllergies, listMaladies } from "../../utils/healthissue";
 import { MaterialIcons as Icon } from "@expo/vector-icons";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { userActions } from "../../redux/userSlice";
 import Constants from "expo-constants";
 import { storeData } from "../../utils/async";
-import TextInputField from "../../components/TextInputField/TextInputField";
-import { listAllergies, listMaladies } from "../../utils/healthissue";
+import { userActions } from "../../redux/userSlice";
+import { uiActions } from "../../redux/uiSlice";
 
-const Register = ({ navigation }) => {
+const EditProfile = ({ navigation }) => {
+  const { user } = useSelector((state) => state.userSlice);
   const dispatch = useDispatch();
 
-  const { control, handleSubmit, getValues } = useForm({
+  const { control, getValues } = useForm({
     defaultValues: {
-      nom: "",
-      prenom: "",
-      poids: "0",
-      taille: "0",
-      date_naissance: new Date(),
-      maladies: [],
-      allergies: [],
-      email: "",
+      nom: user.nom,
+      prenom: user.prenom,
+      poids: user.poids + "",
+      taille: user.taille + "",
+      date_naissance: new Date(user.date_naissance),
+      maladies: user.maladies,
+      allergies: user.allergies,
+      email: user.email,
       mot_passe: "",
-      tel: "",
+      tel: user.tel,
     },
   });
 
-  function SubmitRegister() {
+  const updateAction = () => {
     const {
       nom,
       prenom,
@@ -43,9 +45,9 @@ const Register = ({ navigation }) => {
       taille,
       tel,
     } = getValues();
-
     axios
-      .post(Constants.expoConfig.extra.url + "/register", {
+      .put(Constants.expoConfig.extra.url + "/user", {
+        id: user._id,
         nom,
         prenom,
         allergies,
@@ -60,12 +62,14 @@ const Register = ({ navigation }) => {
       .then((response) => {
         storeData("user", response.data);
         dispatch(userActions.inscrire(response.data));
-      })
-      .catch((error) => {});
-  }
+        dispatch(uiActions.setSuccessMessage("Update successfuly"));
+        navigation.navigate("Profile");
+      });
+  };
   return (
     <View>
-      <Text>Register</Text>
+      <Text>EditProfile</Text>
+
       <Controller
         control={control}
         name="nom"
@@ -205,9 +209,9 @@ const Register = ({ navigation }) => {
         render={({ field: { value, onChange }, fieldState: { error } }) => {
           return (
             <TextInputField
+              type={"password"}
               value={value}
               onChange={onChange}
-              type={"password"}
               placeholder="Mot de passe"
             />
           );
@@ -217,19 +221,13 @@ const Register = ({ navigation }) => {
       <Button
         title="Submit"
         onPress={() => {
-          SubmitRegister();
-        }}
-      />
-      <Button
-        title="J'ai un compte ! connecter"
-        onPress={() => {
-          navigation.navigate("Login");
+          updateAction();
         }}
       />
     </View>
   );
 };
 
-export default Register;
+export default EditProfile;
 
 const styles = StyleSheet.create({});

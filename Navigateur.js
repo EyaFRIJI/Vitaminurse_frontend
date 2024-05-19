@@ -23,6 +23,8 @@ import Cam from "./src/pages/Cam/Cam";
 import Preview from "./src/pages/Preview/Preview";
 import BottomBar from "./src/components/BottomBar/BottomBar";
 import { navigationRef } from "./RootNavigation";
+import Profile from "./src/pages/Profile/Profile";
+import EditProfile from "./src/pages/EditProfile/EditProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -116,6 +118,16 @@ const Navigateur = () => {
             options={{ title: "Camera" }}
           />
           <Stack.Screen name="Cam" component={Cam} options={{ title: "Cam" }} />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{ title: "Profile" }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfile}
+            options={{ title: "EditProfile" }}
+          />
         </Stack.Navigator>
       ) : (
         user === null && (
