@@ -19,9 +19,9 @@ const ListProducts = () => {
               style={{ height: "20%", backgroundColor: "#558866", margin: 50 }}
               key={product.id}
             >
-              <Text>{product.nom}</Text>
+              <Text>{product.name}</Text>
               <Image
-                source={{ uri: product.image }}
+                source={{ uri: product.images[0] }}
                 height={100}
                 width={300}
                 alt="Llllll"

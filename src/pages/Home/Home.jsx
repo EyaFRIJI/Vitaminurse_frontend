@@ -44,19 +44,19 @@ export default function Home({ navigation }) {
   useEffect(() => {
     code !== null && code !== undefined && code.error == null && searchDoc();
     //uploadToFireStorage();
-    setCode(null);
   }, [code]);
 
   useEffect(() => {
     if (newP) {
       Alert.alert(
         "Title",
-        " Le produit avec le code ${code?.code} est inexistant.",
+        `Le produit avec le code ${code.code} est inexistant.`,
         [
           {
             text: "Cancel",
             onPress: () => {
               navigation.navigate("Home");
+              setCode(null);
             },
             style: "cancel",
           },
