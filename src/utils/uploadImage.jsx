@@ -39,12 +39,10 @@ const pickImage = async (dispatch) => {
         return { error: null, code: dataNeeded, uri: result.assets[0].uri };
       } else {
         dispatch(
-          uiActions.setErrorMessage(
-            "Image invalide. aucun code à barre détecté"
-          )
+          uiActions.setErrorMessage("Invalid image. No barcode detected")
         );
         return {
-          error: "Image invalide. aucun code à barre détecté",
+          error: "Invalid image. No barcode detected",
           code: null,
         };
       }

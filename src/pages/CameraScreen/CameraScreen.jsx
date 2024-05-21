@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, Alert, View } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -49,13 +49,33 @@ export default function CameraScreen({ navigation }) {
       code.error == null &&
       setTimeout(() => {
         searchDoc();
-      }, 300);
+      }, 100);
   }, [code]);
 
   useEffect(() => {
     if (newP) {
-      navigation.navigate("Cam");
-      setNewP(false);
+      Alert.alert(
+        "Title",
+        "This is an alert message.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {
+              navigation.navigate("CameraScreen");
+            },
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("Cam");
+            },
+            style: "cancel",
+          },
+        ],
+        { cancelable: false }
+      );
+      setNewP(true);
     }
   }, [newP]);
 
@@ -74,6 +94,14 @@ export default function CameraScreen({ navigation }) {
             BarCodeScanner.Constants.BarCodeType.datamatrix,
             BarCodeScanner.Constants.BarCodeType.aztec,
             BarCodeScanner.Constants.BarCodeType.qr,
+            BarCodeScanner.Constants.BarCodeType.interleaved2of5,
+            BarCodeScanner.Constants.BarCodeType.ean13,
+            BarCodeScanner.Constants.BarCodeType.ean8,
+            BarCodeScanner.Constants.BarCodeType.upcA,
+            BarCodeScanner.Constants.BarCodeType.upcE,
+            BarCodeScanner.Constants.BarCodeType.pdf417,
+            BarCodeScanner.Constants.BarCodeType.rss14,
+            BarCodeScanner.Constants.BarCodeType.rssExpanded,
           ],
         }}
         onBarCodeScanned={(...args) => {

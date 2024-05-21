@@ -1,4 +1,4 @@
-import { Button, Image, Text, View } from "react-native";
+import { Button, Image, Text, Alert, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { userActions } from "../../redux/userSlice";
 import { storeData } from "../../utils/async";
@@ -36,7 +36,7 @@ export default function Home({ navigation }) {
     } else {
       dispatch(productActions.setScannedId(code.code));
       dispatch(uiActions.clearAll());
-      dispatch(uiActions.setErrorMessage("Produit inexistant"));
+      dispatch(uiActions.setErrorMessage("Nonexistent product"));
       setNewP(true);
     }
   };
@@ -49,7 +49,27 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     if (newP) {
-      navigation.navigate("Cam");
+      Alert.alert(
+        "Title",
+        " Le produit avec le code ${code?.code} est inexistant.",
+        [
+          {
+            text: "Cancel",
+            onPress: () => {
+              navigation.navigate("Home");
+            },
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("Cam");
+            },
+            style: "cancel",
+          },
+        ],
+        { cancelable: false }
+      );
       setNewP(false);
     }
   }, [newP]);
