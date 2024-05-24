@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
@@ -10,11 +10,12 @@ import { userActions } from "../../redux/userSlice";
 import Constants from "expo-constants";
 import { storeData } from "../../utils/async";
 import TextInputField from "../../components/TextInputField/TextInputField";
-import { listAllergies, listMaladies } from "../../utils/healthissue";
+// import { listAllergies, listMaladies } from "../../utils/healthissue";
 
 const Register = ({ navigation }) => {
   const dispatch = useDispatch();
-
+  const [listAllergies, setListAllergies] = useState([]);
+  const [listMaladies, setListMaladies] = useState([]);
   const { control, handleSubmit, getValues } = useForm({
     defaultValues: {
       nom: "",
@@ -29,6 +30,16 @@ const Register = ({ navigation }) => {
       tel: "",
     },
   });
+
+  useEffect(() => {
+    axios.get(Constants.expoConfig.extra.url + "/maladie").then((response) => {
+      console.log(response.data);
+      setListMaladies(response.data);
+    });
+    axios.get(Constants.expoConfig.extra.url + "/allergie").then((response) => {
+      setListAllergies(response.data);
+    });
+  }, []);
 
   function SubmitRegister() {
     const {
@@ -157,7 +168,7 @@ const Register = ({ navigation }) => {
               selectText="Maladies"
               items={listMaladies}
               IconRenderer={Icon}
-              uniqueKey="id"
+              uniqueKey="nom"
               onSelectedItemsChange={(e) => {
                 onChange(e);
               }}
@@ -176,7 +187,7 @@ const Register = ({ navigation }) => {
               selectText="Allergies"
               items={listAllergies}
               IconRenderer={Icon}
-              uniqueKey="id"
+              uniqueKey="_id"
               onSelectedItemsChange={(e) => {
                 onChange(e);
               }}

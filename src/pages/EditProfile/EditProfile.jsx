@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
-import { listAllergies, listMaladies } from "../../utils/healthissue";
+// import { listAllergies, listMaladies } from "../../utils/healthissue";
 import { MaterialIcons as Icon } from "@expo/vector-icons";
 import axios from "axios";
 import Constants from "expo-constants";
@@ -16,6 +16,17 @@ import { uiActions } from "../../redux/uiSlice";
 const EditProfile = ({ navigation }) => {
   const { user } = useSelector((state) => state.userSlice);
   const dispatch = useDispatch();
+  const [listAllergies, setListAllergies] = useState([]);
+  const [listMaladies, setListMaladies] = useState([]);
+
+  useEffect(() => {
+    axios.get(Constants.expoConfig.extra.url + "/maladie").then((response) => {
+      setListMaladies(response.data);
+    });
+    axios.get(Constants.expoConfig.extra.url + "/allergie").then((response) => {
+      setListAllergies(response.data);
+    });
+  }, []);
 
   const { control, getValues } = useForm({
     defaultValues: {
