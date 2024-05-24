@@ -1,6 +1,5 @@
 import { Button, Image, Text, Alert, View } from "react-native";
-import { useDispatch } from "react-redux";
-import { userActions } from "../../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { storeData } from "../../utils/async";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import pickImage from "../../utils/uploadImage";
@@ -21,17 +20,32 @@ import {
 } from "firebase/firestore";
 import { productActions } from "../../redux/productSlice";
 import ConfirmOCR from "../../components/ConfirmOCR/ConfirmOCR";
+import axios from "axios";
+import Constants from "expo-constants";
+import { userActions } from "../../redux/userSlice";
+
 export default function Home({ navigation }) {
   const [code, setCode] = useState(null);
   const [newP, setNewP] = useState(false);
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.userSlice);
 
   const searchDoc = async () => {
     const docRef = doc(db, "Produits", code.code);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      axios
+        .put(Constants.expoConfig.extra.url + "/add_action", {
+          action: { products: [code.code], type: "Scann" },
+          id: user._id,
+        })
+        .then((response) => {
+          console.log(response.data);
+          dispatch(userActions.inscrire(response.data));
+        })
+        .catch((error) => {});
       docSnap.data().ocr.map((donnee) => {
-        console.log(donnee);
+        // console.log(donnee);
       });
     } else {
       dispatch(productActions.setScannedId(code.code));

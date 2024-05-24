@@ -19,17 +19,18 @@ const BottomBar = ({}) => {
     <View
       style={{
         width: Dimensions.get("screen").width,
-        height: 50,
+        height: 60,
         bottom: 0,
 
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "row",
-        gap: 50,
+        gap: 60,
       }}
     >
       <TouchableOpacity
+        style={{ right: 50 }}
         onPress={() => {
           RootNavigation.navigate("Home");
           setRouteName("Home");
@@ -43,6 +44,7 @@ const BottomBar = ({}) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        style={{ right: 55 }}
         onPress={() => {
           RootNavigation.navigate("CameraScreen");
           setRouteName("CameraScreen");
@@ -56,6 +58,7 @@ const BottomBar = ({}) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        style={{ right: 65 }}
         onPress={() => {
           setRouteName("ListProducts");
           RootNavigation.navigate("ListProducts");
@@ -69,20 +72,21 @@ const BottomBar = ({}) => {
       </TouchableOpacity>
 
       <TouchableOpacity
+        style={{ position: "absolute", right: 90 }}
         onPress={() => {
           setRouteName("Profile");
           RootNavigation.navigate("Profile");
         }}
       >
         <Ionicons
-          name="search"
+          name="person"
           size={routeName === "Profile" ? 35 : 25}
           color={routeName === "Profile" ? "#5ba5ff" : "grey"}
         />
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={{ position: "absolute", right: 0 }}
+        style={{ position: "absolute", right: 20 }}
         onPress={() => {
           storeData("user", null);
           dispatch(userActions.deconnecter());

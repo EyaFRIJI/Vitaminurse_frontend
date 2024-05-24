@@ -7,14 +7,19 @@ import { Camera } from "expo-camera/legacy";
 import pickImage from "../../utils/uploadImage";
 import { doc, getDoc } from "firebase/firestore";
 import { db, storage } from "../../../firebaseConfig";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "../../redux/productSlice";
 import { uiActions } from "../../redux/uiSlice";
+import axios from "axios";
+import { userActions } from "../../redux/userSlice";
+import Constants from "expo-constants";
 
 export default function CameraScreen({ navigation }) {
   const [displayText, setDisplayText] = useState("");
   const [hasPermission, setHasPermission] = useState(null);
   const [code, setCode] = useState(null);
+  const { user } = useSelector((state) => state.userSlice);
+  const [canScan, setCanScan] = useState(true);
   const [newP, setNewP] = useState(false);
   const dispatch = useDispatch();
   const cameraRef = useRef(null);
@@ -32,8 +37,21 @@ export default function CameraScreen({ navigation }) {
     const docRef = doc(db, "Produits", code.code);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
+      axios
+        .put(Constants.expoConfig.extra.url + "/add_action", {
+          action: { products: [code.code], type: "Scann" },
+          id: user._id,
+        })
+        .then((response) => {
+          console.log(response.data);
+          dispatch(userActions.inscrire(response.data));
+        })
+        .catch((error) => {
+          dispatch(uiActions.setErrorMessage("eeeee" + error.message));
+        });
+
       docSnap.data().ocr.map((donnee) => {
-        console.log(donnee);
+        // console.log(donnee);
       });
     } else {
       dispatch(productActions.setScannedId(code.code));
@@ -61,7 +79,7 @@ export default function CameraScreen({ navigation }) {
           {
             text: "Cancel",
             onPress: () => {
-              navigation.navigate("CameraScreen");
+              navigation.navigate("Home");
             },
             style: "cancel",
           },
@@ -106,7 +124,7 @@ export default function CameraScreen({ navigation }) {
         }}
         onBarCodeScanned={(...args) => {
           const data = args[0].data;
-          setCode({ code: data, error: null });
+          if (canScan && code == null) setCode({ code: data, error: null });
         }}
       />
       <View style={styles.boxContainer}>

@@ -25,6 +25,8 @@ import BottomBar from "./src/components/BottomBar/BottomBar";
 import { navigationRef } from "./RootNavigation";
 import Profile from "./src/pages/Profile/Profile";
 import EditProfile from "./src/pages/EditProfile/EditProfile";
+import InfoProduct from "./src/pages/InfoProduct/InfoProduct";
+import ViewHistory from "./src/pages/ViewHistory/ViewHistory";
 
 const Stack = createNativeStackNavigator();
 
@@ -108,6 +110,11 @@ const Navigateur = () => {
             options={{ title: "List Products" }}
           />
           <Stack.Screen
+            name="InfoProduct"
+            component={InfoProduct}
+            options={{ title: "Info Product" }}
+          />
+          <Stack.Screen
             name="CameraScreen"
             component={CameraScreen}
             options={{ title: "Camera" }}
@@ -127,6 +134,11 @@ const Navigateur = () => {
             name="EditProfile"
             component={EditProfile}
             options={{ title: "EditProfile" }}
+          />
+          <Stack.Screen
+            name="ViewHistory"
+            component={ViewHistory}
+            options={{ title: "ViewHistory" }}
           />
         </Stack.Navigator>
       ) : (
