@@ -40,8 +40,8 @@ export default function Home({ navigation }) {
           id: user._id,
         })
         .then((response) => {
-          console.log(response.data);
           dispatch(userActions.inscrire(response.data));
+          navigation.navigate("InfoProduct", { code: code.code });
         })
         .catch((error) => {});
       docSnap.data().ocr.map((donnee) => {

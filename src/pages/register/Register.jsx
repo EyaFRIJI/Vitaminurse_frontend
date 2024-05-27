@@ -168,7 +168,7 @@ const Register = ({ navigation }) => {
               selectText="Maladies"
               items={listMaladies}
               IconRenderer={Icon}
-              uniqueKey="nom"
+              uniqueKey="_id"
               onSelectedItemsChange={(e) => {
                 onChange(e);
               }}

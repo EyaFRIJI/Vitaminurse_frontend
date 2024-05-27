@@ -29,11 +29,11 @@ const Profile = ({ navigation }) => {
       <Text>Health issues</Text>
       <Text>Allergies</Text>
       {user.allergies.map((allergie, index) => {
-        return <Text key={index}>* {allergie.nom}</Text>;
+        return <Text key={index}>* {allergie.name}</Text>;
       })}
       <Text>Illnes</Text>
       {user.maladies.map((maladie, index) => {
-        return <Text key={index}>* {maladie.nom}</Text>;
+        return <Text key={index}>* {maladie.name}</Text>;
       })}
       <Button
         title="Edit Profile"
@@ -46,7 +46,7 @@ const Profile = ({ navigation }) => {
         .slice(Math.max(user.actions.length - 5, 0))
         .map((action) => {
           return (
-            <>
+            <View key={action._id}>
               <Text key={action._id}>- {action.type} </Text>
               {action.products.map((item) => {
                 return (
@@ -61,7 +61,7 @@ const Profile = ({ navigation }) => {
                   </TouchableOpacity>
                 );
               })}
-            </>
+            </View>
           );
         })}
 

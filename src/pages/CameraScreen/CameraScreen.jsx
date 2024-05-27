@@ -43,8 +43,8 @@ export default function CameraScreen({ navigation }) {
           id: user._id,
         })
         .then((response) => {
-          console.log(response.data);
           dispatch(userActions.inscrire(response.data));
+          navigation.navigate("InfoProduct", { code: code.code });
         })
         .catch((error) => {
           dispatch(uiActions.setErrorMessage("eeeee" + error.message));

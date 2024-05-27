@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TextInputField from "../../components/TextInputField/TextInputField";
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,8 +35,8 @@ const EditProfile = ({ navigation }) => {
       poids: user.poids + "",
       taille: user.taille + "",
       date_naissance: new Date(user.date_naissance),
-      maladies: user.maladies,
-      allergies: user.allergies,
+      maladies: user.maladies.map((m) => m._id),
+      allergies: user.allergies.map((a) => a._id),
       email: user.email,
       mot_passe: "",
       tel: user.tel,
@@ -172,7 +172,7 @@ const EditProfile = ({ navigation }) => {
               selectText="Maladies"
               items={listMaladies}
               IconRenderer={Icon}
-              uniqueKey="id"
+              uniqueKey="_id"
               onSelectedItemsChange={(e) => {
                 onChange(e);
               }}
@@ -191,9 +191,10 @@ const EditProfile = ({ navigation }) => {
               selectText="Allergies"
               items={listAllergies}
               IconRenderer={Icon}
-              uniqueKey="id"
+              uniqueKey="_id"
               onSelectedItemsChange={(e) => {
                 onChange(e);
+                console.log(e, value);
               }}
               selectedItems={value}
             />
