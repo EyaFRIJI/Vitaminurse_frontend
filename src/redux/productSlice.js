@@ -7,6 +7,7 @@ const initialState = {
   images: [],
   scannedID: null,
   analyse_ocr: null,
+  name: "",
 };
 
 export const productSlice = createSlice({
@@ -37,6 +38,9 @@ export const productSlice = createSlice({
     },
     setAnalyseOCR: (state, { payload }) => {
       state.analyse_ocr = payload;
+    },
+    setName: (state, { payload }) => {
+      state.name = payload;
     },
   },
 });

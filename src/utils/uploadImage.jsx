@@ -1,17 +1,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { db, storage } from "../../firebaseConfig";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { v4 } from "uuid";
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-} from "firebase/firestore";
-import dayjs from "dayjs";
+
 import { uiActions } from "../redux/uiSlice";
 
 const pickImage = async (dispatch) => {

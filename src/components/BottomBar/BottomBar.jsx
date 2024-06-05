@@ -39,7 +39,7 @@ const BottomBar = ({}) => {
         <Ionicons
           name="home"
           size={routeName === "Home" ? 35 : 25}
-          color={routeName === "Home" ? "#5ba5ff" : "grey"}
+          color={routeName === "Home" ? "#47a66c" : "grey"}
         />
       </TouchableOpacity>
 
@@ -53,7 +53,7 @@ const BottomBar = ({}) => {
         <Ionicons
           name="camera"
           size={routeName === "Cam" ? 35 : 25}
-          color={routeName === "Cam" ? "#5ba5ff" : "grey"}
+          color={routeName === "Cam" ? "#47a66c" : "grey"}
         />
       </TouchableOpacity>
 
@@ -67,7 +67,7 @@ const BottomBar = ({}) => {
         <Ionicons
           name="search"
           size={routeName === "ListProducts" ? 35 : 25}
-          color={routeName === "ListProducts" ? "#5ba5ff" : "grey"}
+          color={routeName === "ListProducts" ? "#47a66c" : "grey"}
         />
       </TouchableOpacity>
 
@@ -81,7 +81,7 @@ const BottomBar = ({}) => {
         <Ionicons
           name="person"
           size={routeName === "Profile" ? 35 : 25}
-          color={routeName === "Profile" ? "#5ba5ff" : "grey"}
+          color={routeName === "Profile" ? "#47a66c" : "grey"}
         />
       </TouchableOpacity>
 

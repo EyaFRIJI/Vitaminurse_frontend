@@ -20,22 +20,18 @@ const ConfirmOCR = ({ analyse, navigation }) => {
 
   const actionSubmit = (action) => {
     analyse
-      ? setDoc(
-          doc(
-            db,
-            action === "confirmer"
-              ? "analyse_ocr_validé"
-              : "analyse_ocr_non_validé",
-            analyse.id
-          ),
-          { ...analyse, resultat: text_ocr }
-        ).then(() => {
+      ? setDoc(doc(db, "analyse_ocr", analyse.id), {
+          ...analyse,
+          resultat_by_user: text_ocr,
+          validate_by_user: action === "confirmer" ? true : false,
+        }).then(() => {
           dispatch(
             action === "confirmer"
               ? uiActions.setSuccessMessage("Demande enregistreé avec succés")
               : uiActions.setErrorMessage("Validation annulée")
           );
           dispatch(productActions.clearImages());
+          dispatch(productActions.setName(""));
           navigation.navigate("Home");
         })
       : alert("null");

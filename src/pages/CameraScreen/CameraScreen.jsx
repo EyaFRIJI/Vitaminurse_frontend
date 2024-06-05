@@ -36,27 +36,25 @@ export default function CameraScreen({ navigation }) {
   const searchDoc = async () => {
     const docRef = doc(db, "Produits", code.code);
     const docSnap = await getDoc(docRef);
+
     if (docSnap.exists()) {
       axios
         .put(Constants.expoConfig.extra.url + "/add_action", {
-          action: { products: [code.code], type: "Scann" },
+          action: { produits: [code.code], type: "Scann" },
           id: user._id,
         })
         .then((response) => {
           dispatch(userActions.inscrire(response.data));
+
           navigation.navigate("InfoProduct", { code: code.code });
         })
         .catch((error) => {
-          dispatch(uiActions.setErrorMessage("eeeee" + error.message));
+          dispatch(uiActions.setErrorMessage("Erreur" + error.message));
         });
-
-      docSnap.data().ocr.map((donnee) => {
-        // console.log(donnee);
-      });
     } else {
       dispatch(productActions.setScannedId(code.code));
       dispatch(uiActions.clearAll());
-      dispatch(uiActions.setErrorMessage("Produit inexistant"));
+      dispatch(uiActions.setErrorMessage("Produit introuvable"));
       setNewP(true);
     }
   };
@@ -67,14 +65,14 @@ export default function CameraScreen({ navigation }) {
       code.error == null &&
       setTimeout(() => {
         searchDoc();
-      }, 100);
+      }, 300);
   }, [code]);
 
   useEffect(() => {
     if (newP) {
       Alert.alert(
-        "Title",
-        "This is an alert message.",
+        "Produit introuvable",
+        `Le produit avec le code ${code.code} est inexistant. Voulez-vous l'ajouter ?`,
         [
           {
             text: "Cancel",
@@ -86,6 +84,10 @@ export default function CameraScreen({ navigation }) {
           {
             text: "OK",
             onPress: () => {
+              Alert.alert(
+                "Attention",
+                "la 1ére photo doit étre la photo de l'OCR."
+              );
               navigation.navigate("Cam");
             },
             style: "cancel",

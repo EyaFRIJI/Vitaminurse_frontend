@@ -1,12 +1,13 @@
-// Importations nécessaires
 import React, { useEffect, useState } from "react";
 import {
   View,
   Image,
-  Button,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  TextInput,
+  Text,
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "../../redux/productSlice";
@@ -21,7 +22,9 @@ import axios from "axios";
 import ConfirmOCR from "../../components/ConfirmOCR/ConfirmOCR";
 
 const Preview = ({ navigation }) => {
-  const { images, scannedID } = useSelector((state) => state.productSlice);
+  const { images, scannedID, name } = useSelector(
+    (state) => state.productSlice
+  );
   const { user } = useSelector((state) => state.userSlice);
   const dispatch = useDispatch();
   const [imagesPath, setImagesPath] = useState([]);
@@ -58,6 +61,7 @@ const Preview = ({ navigation }) => {
         const analyse_ocr = {
           images: data,
           user: user._id,
+          name: name, // Include product name
         };
         const id = scannedID + "_" + dayjs().unix();
         setDoc(doc(db, "analyse_ocr", id), analyse_ocr)
@@ -103,31 +107,59 @@ const Preview = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ConfirmOCR analyse={analyse} navigation={navigation} />
-      <ScrollView>
-        {images.map((i, index) => (
-          <TouchableOpacity
-            key={index}
-            onLongPress={() => {
-              dispatch(productActions.deleteImage(i));
-            }}
-          >
-            <Image source={{ uri: i }} style={styles.photo} />
-          </TouchableOpacity>
-        ))}
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        {images.length > 0 &&
+          images.map((i, index) => (
+            <View key={index} style={styles.imageContainer}>
+              <Text style={styles.imageLabel}>
+                {index === 0 ? "Photo OCR" : `${index + 1}ème photo`}
+              </Text>
+              <TouchableOpacity
+                onLongPress={() => {
+                  dispatch(productActions.deleteImage(i));
+                }}
+              >
+                <Image source={{ uri: i }} style={styles.photo} />
+              </TouchableOpacity>
+            </View>
+          ))}
+        <Text style={styles.inputLabel}>Nom du produit</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nom du produit"
+          value={name}
+          onChangeText={(e) => {
+            dispatch(productActions.setName(e));
+          }}
+        />
       </ScrollView>
 
-      <Button
-        title="Ajouter une autre image"
+      {images.length < 4 && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            navigation.navigate("Cam");
+          }}
+        >
+          <Text style={styles.buttonText}>Ajouter une autre photo</Text>
+        </TouchableOpacity>
+      )}
+
+      <TouchableOpacity
+        style={styles.saveButton}
         onPress={() => {
-          navigation.navigate("Cam");
+          if (images.length > 0) {
+            uploadToFireStorage();
+          } else {
+            Alert.alert(
+              "Erreur",
+              "Veuillez ajouter au moins l'image de l'OCR."
+            );
+          }
         }}
-      />
-      <Button
-        title="Enregistrer"
-        onPress={() => {
-          uploadToFireStorage();
-        }}
-      />
+      >
+        <Text style={styles.buttonText}>Enregistrer</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -137,12 +169,73 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#F0F0F0",
+    padding: 20,
+  },
+  scrollView: {
+    alignItems: "center",
+  },
+  imageContainer: {
+    alignItems: "center",
+    marginBottom: 20,
   },
   photo: {
     width: 200,
     height: 200,
     resizeMode: "cover",
+    borderRadius: 10,
+  },
+  imageLabel: {
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  inputLabel: {
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  input: {
+    height: 50,
+    width: "100%",
+    borderColor: "#47a66c",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 10,
     marginBottom: 20,
+    backgroundColor: "#FFF",
+  },
+  addButton: {
+    backgroundColor: "#999999",
+    paddingVertical: 15,
+    paddingHorizontal: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    width: "100%",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  saveButton: {
+    backgroundColor: "#47a66c",
+    paddingVertical: 15,
+    paddingHorizontal: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    marginBottom: 20,
+    top: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+    width: "100%",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

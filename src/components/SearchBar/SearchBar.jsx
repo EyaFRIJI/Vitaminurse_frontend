@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import React, { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { StyleSheet, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import { useDispatch, useSelector } from "react-redux";
 import { productActions } from "../../redux/productSlice";
@@ -23,23 +23,7 @@ const SearchBar = () => {
   }
 
   const SearchProduct = async (searchText) => {
-    // const citiesRef = collection(db, "Produits");
-    // // Create a query against the collection.
-    // const q = query(citiesRef, where("nom", ">=", searchText.toLowerCase()));
-    // const searchQueryExec = await getDocs(q);
-    // if (searchQueryExec.empty) {
-    //   console.log("not found");
-    // }
-    // const search = await Promise.all(
-    //   searchQueryExec.docs.map((doc) => {
-    //     // doc.data() is never undefined for query doc snapshots
-    //     return { id: doc.id, ...doc.data() };
-    //   })
-    // );
-    // console.log(search);
-    // dispatch(productActions.searchProduct(search));
-
-    //get all documents
+    // get all documents
     const querySnapshot = await getDocs(collection(db, "Produits"));
     const x = await Promise.all(
       querySnapshot.docs.map(async (doc) => {
@@ -56,8 +40,7 @@ const SearchBar = () => {
       return arraysEqual(a.products, idTable) && a.type === "Search";
     });
 
-    if (exist.includes(true)) {
-    } else {
+    if (!exist.includes(true)) {
       axios
         .put(Constants.expoConfig.extra.url + "/add_action", {
           action: { products: idTable, type: "Search" },
@@ -66,25 +49,50 @@ const SearchBar = () => {
         .then((response) => {
           dispatch(userActions.inscrire(response.data));
         })
-        .catch((error) => {});
+        .catch((error) => {
+          console.error(error);
+        });
     }
 
     dispatch(productActions.searchProduct(searchText !== "" ? t : []));
   };
 
   return (
-    <TextInput
-      style={{ borderColor: "#000", borderWidth: 1 }}
-      value={searchText}
-      placeholder="Rechercher"
-      onChangeText={(text) => {
-        setSearchText(text);
-        text !== null && SearchProduct(text.trim());
-      }}
-    />
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        value={searchText}
+        placeholder="Rechercher"
+        placeholderTextColor="#aaa"
+        onChangeText={(text) => {
+          setSearchText(text);
+          text !== null && SearchProduct(text.trim());
+        }}
+      />
+    </View>
   );
 };
 
 export default SearchBar;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: "#F1F1F1",
+  },
+  input: {
+    borderColor: "#155f32",
+    borderWidth: 1,
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+    backgroundColor: "white",
+    color: "#000",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+  },
+});
