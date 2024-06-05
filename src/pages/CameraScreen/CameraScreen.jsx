@@ -40,7 +40,7 @@ export default function CameraScreen({ navigation }) {
     if (docSnap.exists()) {
       axios
         .put(Constants.expoConfig.extra.url + "/add_action", {
-          action: { produits: [code.code], type: "Scann" },
+          action: { products: [code.code], type: "Scann" },
           id: user._id,
         })
         .then((response) => {
