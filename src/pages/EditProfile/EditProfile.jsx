@@ -19,6 +19,8 @@ import Constants from "expo-constants";
 import { userActions } from "../../redux/userSlice";
 import { uiActions } from "../../redux/uiSlice";
 import { storeData } from "../../utils/async";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const EditProfile = ({ navigation }) => {
   const { user } = useSelector((state) => state.userSlice);
@@ -35,19 +37,58 @@ const EditProfile = ({ navigation }) => {
     });
   }, []);
 
-  const { control, getValues } = useForm({
+  const schema = yup.object().shape({
+    nom: yup.string().required("Nom est requis"),
+    prenom: yup.string().required("Prénom est requis"),
+    poids: yup
+      .number()
+      .typeError("Poids doit être un nombre")
+      .max(
+        299,
+        "Saisir poids loqigue qui doit avoir au maximum 3 chiffre et ne depasse pas 299."
+      )
+      .min(
+        20,
+        "Saisir poids logique qui doit avoir au minimum 2 chiffre et moins que 20."
+      )
+      .required("Poids est requis"),
+    taille: yup
+      .number()
+      .typeError("Taille doit être un nombre")
+      .max(
+        299,
+        "Saisir taille loqigue qui doit avoir au maximum 3 chiffre et ne depasse pas 299."
+      )
+      .min(
+        19,
+        "Saisir taille logique qui doit avoir au minimum 2 chiffre et moins que 20."
+      )
+      .required("Taille est requise"),
+    tel: yup.string().required("Numéro de téléphone est requis"),
+    email: yup.string().email("Email invalide").required("Email est requis"),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+  } = useForm({
     defaultValues: {
-      nom: user.nom,
-      prenom: user.prenom,
-      poids: user.poids + "",
-      taille: user.taille + "",
-      date_naissance: new Date(user.date_naissance),
-      maladies: user.maladies.map((m) => m._id),
-      allergies: user.allergies.map((a) => a._id),
-      email: user.email,
+      nom: user.nom || "",
+      prenom: user.prenom || "",
+      poids: user.poids ? user.poids + "" : "",
+      taille: user.taille ? user.taille + "" : "",
+      date_naissance: user.date_naissance
+        ? new Date(user.date_naissance)
+        : new Date(),
+      maladies: user.maladies ? user.maladies.map((m) => m._id) : [],
+      allergies: user.allergies ? user.allergies.map((a) => a._id) : [],
+      email: user.email || "",
       mot_passe: "",
-      tel: user.tel,
+      tel: user.tel || "",
     },
+    resolver: yupResolver(schema),
   });
 
   const updateAction = () => {
@@ -98,12 +139,15 @@ const EditProfile = ({ navigation }) => {
             <>
               <Text style={styles.label}>Nom :</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, errors.nom && styles.errorInput]}
                 value={value}
                 onChangeText={onChange}
                 placeholder="Nom"
                 placeholderTextColor="#888"
               />
+              {errors.nom && (
+                <Text style={styles.errorText}>{errors.nom.message}</Text>
+              )}
             </>
           )}
         />
@@ -114,12 +158,15 @@ const EditProfile = ({ navigation }) => {
             <>
               <Text style={styles.label}>Prénom :</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, errors.prenom && styles.errorInput]}
                 value={value}
                 onChangeText={onChange}
                 placeholder="Prénom"
                 placeholderTextColor="#888"
               />
+              {errors.prenom && (
+                <Text style={styles.errorText}>{errors.prenom.message}</Text>
+              )}
             </>
           )}
         />
@@ -136,6 +183,7 @@ const EditProfile = ({ navigation }) => {
                 onChange={(e, selectedDate) => {
                   onChange(selectedDate || value);
                 }}
+                style={styles.datePicker}
               />
             </>
           )}
@@ -147,13 +195,16 @@ const EditProfile = ({ navigation }) => {
             <>
               <Text style={styles.label}>Poids(kg) :</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, errors.poids && styles.errorInput]}
                 value={value}
                 onChangeText={onChange}
                 keyboardType="numeric"
                 placeholder="Poids"
                 placeholderTextColor="#888"
               />
+              {errors.poids && (
+                <Text style={styles.errorText}>{errors.poids.message}</Text>
+              )}
             </>
           )}
         />
@@ -164,13 +215,16 @@ const EditProfile = ({ navigation }) => {
             <>
               <Text style={styles.label}>Taille(cm) :</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, errors.taille && styles.errorInput]}
                 value={value}
                 onChangeText={onChange}
                 keyboardType="numeric"
                 placeholder="Taille"
                 placeholderTextColor="#888"
               />
+              {errors.taille && (
+                <Text style={styles.errorText}>{errors.taille.message}</Text>
+              )}
             </>
           )}
         />
@@ -181,13 +235,16 @@ const EditProfile = ({ navigation }) => {
             <>
               <Text style={styles.label}>Numéro de téléphone :</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, errors.tel && styles.errorInput]}
                 value={value}
                 onChangeText={onChange}
                 keyboardType="phone-pad"
                 placeholder="Numéro de téléphone"
                 placeholderTextColor="#888"
               />
+              {errors.tel && (
+                <Text style={styles.errorText}>{errors.tel.message}</Text>
+              )}
             </>
           )}
         />
@@ -234,13 +291,16 @@ const EditProfile = ({ navigation }) => {
             <>
               <Text style={styles.label}>Email :</Text>
               <TextInput
-                style={styles.inputField}
+                style={[styles.inputField, errors.email && styles.errorInput]}
                 value={value}
                 onChangeText={onChange}
                 keyboardType="email-address"
                 placeholder="@gmail.com"
                 placeholderTextColor="#888"
               />
+              {errors.email && (
+                <Text style={styles.errorText}>{errors.email.message}</Text>
+              )}
             </>
           )}
         />
@@ -262,7 +322,10 @@ const EditProfile = ({ navigation }) => {
           )}
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={updateAction}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSubmit(updateAction)}
+      >
         <Text style={styles.buttonText}>Modifier</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -301,6 +364,13 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 13,
     color: "#000",
+  },
+  errorInput: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 15,
   },
   selectToggle: {
     borderColor: "#47a66c",

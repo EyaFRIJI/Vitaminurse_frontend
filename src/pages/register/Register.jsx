@@ -18,17 +18,60 @@ import { useDispatch } from "react-redux";
 import { userActions } from "../../redux/userSlice";
 import Constants from "expo-constants";
 import { storeData } from "../../utils/async";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const Register = ({ navigation }) => {
   const dispatch = useDispatch();
   const [listAllergies, setListAllergies] = useState([]);
   const [listMaladies, setListMaladies] = useState([]);
-  const { control, handleSubmit, getValues } = useForm({
+
+  const schema = yup.object().shape({
+    nom: yup.string().required("Nom est requis"),
+    prenom: yup.string().required("Prénom est requis"),
+    taille: yup
+      .number()
+      .typeError("Taille doit être un nombre")
+      .max(
+        299,
+        "Saisir taille loqigue qui doit avoir au maximum 3 chiffre et ne depasse pas 299."
+      )
+      .min(
+        19,
+        "Saisir taille logique qui doit avoir au minimum 2 chiffre et moins que 20."
+      )
+      .required("Taille est requise"),
+    poids: yup
+      .number()
+      .typeError("Poids doit être un nombre")
+      .max(
+        299,
+        "Saisir poids loqigue qui doit avoir au maximum 3 chiffre et ne depasse pas 299."
+      )
+      .min(
+        20,
+        "Saisir poids logique qui doit avoir au minimum 2 chiffre et moins que 20."
+      )
+      .required("Poids est requis"),
+    tel: yup.string().required("Numéro de téléphone est requis"),
+    email: yup.string().email("Email invalide").required("Email est requis"),
+    mot_passe: yup
+      .string()
+      .min(6, "Mot de passe doit avoir au moins 6 caractères")
+      .required("Mot de passe est requis"),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       nom: "",
       prenom: "",
-      poids: "0",
-      taille: "0",
+      poids: "",
+      taille: "",
       date_naissance: new Date(),
       maladies: [],
       allergies: [],
@@ -36,6 +79,7 @@ const Register = ({ navigation }) => {
       mot_passe: "",
       tel: "",
     },
+    resolver: yupResolver(schema),
   });
 
   useEffect(() => {
@@ -97,12 +141,15 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Nom :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[styles.inputField, errors.nom && styles.errorInput]}
                   value={value}
                   onChangeText={onChange}
                   placeholder="Nom"
                   placeholderTextColor="#888"
                 />
+                {errors.nom && (
+                  <Text style={styles.errorText}>{errors.nom.message}</Text>
+                )}
               </>
             )}
           />
@@ -113,12 +160,18 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Prénom :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[
+                    styles.inputField,
+                    errors.prenom && styles.errorInput,
+                  ]}
                   value={value}
                   onChangeText={onChange}
                   placeholder="Prénom"
                   placeholderTextColor="#888"
                 />
+                {errors.prenom && (
+                  <Text style={styles.errorText}>{errors.prenom.message}</Text>
+                )}
               </>
             )}
           />
@@ -129,7 +182,7 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Date de naissance :</Text>
                 <DateTimePicker
-                  value={value}
+                  value={value || new Date()}
                   mode="date"
                   display="default"
                   onChange={(e, selectedDate) => {
@@ -147,13 +200,16 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Poids(kg) :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[styles.inputField, errors.poids && styles.errorInput]}
                   value={value}
                   onChangeText={onChange}
                   keyboardType="numeric"
                   placeholder="Poids"
                   placeholderTextColor="#888"
                 />
+                {errors.poids && (
+                  <Text style={styles.errorText}>{errors.poids.message}</Text>
+                )}
               </>
             )}
           />
@@ -164,13 +220,19 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Taille(cm) :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[
+                    styles.inputField,
+                    errors.taille && styles.errorInput,
+                  ]}
                   value={value}
                   onChangeText={onChange}
                   keyboardType="numeric"
                   placeholder="Taille"
                   placeholderTextColor="#888"
                 />
+                {errors.taille && (
+                  <Text style={styles.errorText}>{errors.taille.message}</Text>
+                )}
               </>
             )}
           />
@@ -181,13 +243,16 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Numéro de téléphone :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[styles.inputField, errors.tel && styles.errorInput]}
                   value={value}
                   onChangeText={onChange}
                   keyboardType="phone-pad"
                   placeholder="Numéro de téléphone"
                   placeholderTextColor="#888"
                 />
+                {errors.tel && (
+                  <Text style={styles.errorText}>{errors.tel.message}</Text>
+                )}
               </>
             )}
           />
@@ -234,13 +299,16 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Email :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[styles.inputField, errors.email && styles.errorInput]}
                   value={value}
                   onChangeText={onChange}
                   keyboardType="email-address"
                   placeholder="@gmail.com"
                   placeholderTextColor="#888"
                 />
+                {errors.email && (
+                  <Text style={styles.errorText}>{errors.email.message}</Text>
+                )}
               </>
             )}
           />
@@ -251,13 +319,21 @@ const Register = ({ navigation }) => {
               <>
                 <Text style={styles.label}>Mot de passe :</Text>
                 <TextInput
-                  style={styles.inputField}
+                  style={[
+                    styles.inputField,
+                    errors.mot_passe && styles.errorInput,
+                  ]}
                   value={value}
                   onChangeText={onChange}
                   secureTextEntry
                   placeholder="Mot de passe"
                   placeholderTextColor="#888"
                 />
+                {errors.mot_passe && (
+                  <Text style={styles.errorText}>
+                    {errors.mot_passe.message}
+                  </Text>
+                )}
               </>
             )}
           />
@@ -269,7 +345,7 @@ const Register = ({ navigation }) => {
           <Text style={styles.buttonText1}>Créer</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button2]}
+          style={styles.button2}
           onPress={() => navigation.navigate("Login")}
         >
           <Text style={styles.buttonText2}>Vous avez déjà un compte!</Text>
@@ -395,5 +471,13 @@ const styles = StyleSheet.create({
   },
   buttonText2: {
     fontSize: 18,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  errorInput: {
+    borderColor: "red",
   },
 });

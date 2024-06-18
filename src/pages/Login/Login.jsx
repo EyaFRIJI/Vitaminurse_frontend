@@ -13,7 +13,7 @@ import Constants from "expo-constants";
 import { userActions } from "../../redux/userSlice";
 import axios from "axios";
 import { storeData } from "../../utils/async";
-import { Ionicons } from "@expo/vector-icons"; // Import des icônes
+import { Ionicons } from "@expo/vector-icons";
 
 const Login = ({ navigation }) => {
   const dispatch = useDispatch();
